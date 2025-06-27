@@ -2,60 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\RegisterUserAction;
+use App\Actions\UserLoginAction;
+use App\Actions\UserLogoutAction;
+use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function show_register_form()
     {
-        $fields = $request->validate([
-            'avatar' => ['file', 'nullable', 'max:300'],
-            'name' => ['required', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed']
-        ]);
-
-
-        if($request->hasFile('avatar')){
-            $fields['avatar'] = Storage::disk('public')->put('avatars', $request->avatar);
-        }
-
-        $user = User::create($fields);
-
-        Auth::login($user);
-
-        return redirect()->route('dashboard')->with('message', 'Welcome App and you are registered');
+        return Inertia::render('Auth/Register');
     }
 
-    public function login(Request $request)
+    public function register(RegisterUserRequest $request, RegisterUserAction $register_user_action)
     {
-        // Validate
-        $fields = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required']
-        ]);
-
-
-        // Login
-        if(Auth::attempt($fields, $request->remember)){
-            $request->session()->regenerate();
-            return redirect()->intended('dashboard');
-        }
-
-        // Redirect
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records'
-        ])->onlyInput('email');
+        $register_user_action->handle($request, $request->validated());
+        return redirect()->route('login.create');
     }
 
-    public function logout(Request $request)
+    public function show_login_form()
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        return Inertia::render('Auth/Login');
+    }
+
+    public function login(LoginUserRequest $request, UserLoginAction $user_login_action)
+    {
+        $user_login_action->handle($request, $request->validated());
+        return back()->withErrors(['email' => 'The provided credentials do not match our records'])->onlyInput('email');
+    }
+
+    public function logout(Request $request, UserLogoutAction $user_logout_action)
+    {
+        $user_logout_action->handle($request);
         return redirect()->route('home');
     }
 }

@@ -9,7 +9,7 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post(route('login.store'), {
         onError: () => form.reset('password')
     });
 };
@@ -31,7 +31,7 @@ const submit = () => {
                 <input type="checkbox" v-model="form.remember" id="remember_me">
             </div>
             <div>
-                <p class="text-slate-600 mb-2">Need Account <a :href="route('register')" class="text-link">Register</a> </p>
+                <p class="text-slate-600 mb-2">Need Account <a :href="route('register.create')" class="text-link">Register</a> </p>
                 <button class="primary-btn" :disabled="form.processing">Login</button>
             </div>
             

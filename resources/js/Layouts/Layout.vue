@@ -18,8 +18,8 @@ import { Link } from '@inertiajs/vue3';
                     <Link :href="route('logout')" method="post" as="button" type="button" class="nav-link">Logout</Link>
                 </div>
                 <div v-else class="space-x-6">
-                    <Link :href="route('register')" class="nav-link">Register</Link>
-                    <Link :href="route('login')" class="nav-link">Login</Link>
+                    <Link :href="route('register.create')" class="nav-link">Register</Link>
+                    <Link :href="route('login.create')" class="nav-link">Login</Link>
                 </div>
             </nav>
         </header>

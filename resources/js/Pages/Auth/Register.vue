@@ -15,7 +15,7 @@ function change(e){
 }
 
 const submit = () => {
-    form.post(route('register'), {
+    form.post(route('register.store'), {
         onError: () => form.reset('password', 'password_confirmation')
     });
 };
